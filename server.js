@@ -10,16 +10,11 @@ app.get("/", (req, res) => {
 
 app.get("/api/data", async (req, res) => {
   try {
-    const userId = "1234";
+    const userId = "1";
 
     const df = await db.fetchData(userId);
 
     console.log("Dataframe:", df);
-
-    for (const col in df[0]) {
-      console.log(col);
-    }
-
     console.log("DataFrame updated.");
     res.json(df);
   } catch (error) {

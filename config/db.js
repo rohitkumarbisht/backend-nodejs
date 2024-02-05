@@ -27,7 +27,7 @@ const fetchData = async (userId) => {
 
   try {
     console.log("try block");
-    const sqlQuery = `SELECT * FROM ${schemaName}.${tableName} WHERE user_id = $1;`;
+    const sqlQuery = `SELECT * FROM ${schemaName}.${tableName} WHERE uid  = $1;`;
     const result = await client.query(sqlQuery, [userId]);
     console.log(result);
     return result.rows;
