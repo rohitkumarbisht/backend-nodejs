@@ -1,27 +1,16 @@
 const express = require("express");
-const data = require("./data/data");
-const db = require("./config/db");
+const bodyParser = require("body-parser");
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./swagger/swaggerDefinition.js');
+const router = require('./routes/dataRoutes.js')
 
 const app = express();
 
-app.get("/", (req, res) => {
-  res.send("API is running...");
-});
+app.use(bodyParser.json());
 
-app.get("/api/data", async (req, res) => {
-  try {
-    const userId = "1";
+app.use('/', router);
 
-    const df = await db.fetchData(userId);
-
-    console.log("Dataframe:", df);
-    console.log("DataFrame updated.");
-    res.json(df);
-  } catch (error) {
-    console.error("Error processing request:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 const PORT = 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
