@@ -3,6 +3,7 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const {getAssessmentWiseReport,getOverallProgress} = require('../controller/dataController');
 const {jwt_secret_key,jwt_audience,jwt_issuer} = require('../config/config.js');
+const { CustomUnauthorizedError, CustomNotFoundError, CustomInternalServerError } = require('./error-handling/custom_error.js');
 
 router.get('/analytics-report/assessment-wise', async (req, res) => {
   try {
@@ -13,6 +14,7 @@ router.get('/analytics-report/assessment-wise', async (req, res) => {
   } catch (error) {
     console.error('Error executing query', error);
     res.status(500).json({ error: 'Internal Server Error' });
+    throw new Error(`Unauthorized: ${err} `);
   }
 });
 
@@ -21,12 +23,18 @@ router.get('/analytics-report/overall-progress', async (req, res) => {
       const user_id = extractUserIdFromToken(req.headers.authorization);
       const data = await getOverallProgress(user_id);
       res.json(data);
-    } catch (error) {
-      console.error('Error executing query', error);
-      res.json(error);
+    } catch (err) {
+      if (err instanceof CustomUnauthorizedError) {
+        res.status(err.statusCode).json({ error: err.message });
+    } else if (err instanceof CustomNotFoundError) {
+        res.status(err.statusCode).json({ error: err.message });
+    }else if (err instanceof CustomInternalServerError) {
+      res.status(err.statusCode).json({ error: err.message });
+    } else{
+      res.status(200).json({error : err})
+    }
     }
   });
-  
 
 function extractUserIdFromToken(authorizationHeader) {
     const options = {
@@ -43,8 +51,8 @@ function extractUserIdFromToken(authorizationHeader) {
       user_id = decodedToken.jti;
   
   } catch (err) {
-      console.error('Token verification failed:', err);
-      return res.status(401).json({ error: 'Unauthorized' });
+      console.log(err)
+      throw new CustomUnauthorizedError(`Unauthorized: ${err} `);
   }
     return user_id;
   }

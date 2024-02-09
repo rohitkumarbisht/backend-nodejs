@@ -95,12 +95,31 @@ const swagger_doc = {
               }
             }
           },
+          "401":{"description": "Unauthorised Access",
+          "content": {
+            "application/json": {
+              "example" : {
+                "error": "Unauthorized: JsonWebTokenError: jwt audience invalid. expected: jwt_audience "
+            }
+            }
+          }
+        },
+        "404":{"description": "Not Found",
+          "content": {
+            "application/json": {
+              "example" : {
+                "error": " No data found for user ID: user_id"
+            }
+            }
+          }
+        },
           "500": {
             "description": "Internal Server Error",
             "content": {
               "application/json": {
                 "example": {
                   "error": "Internal Server Error"
+                  
                 }
               }
             }
