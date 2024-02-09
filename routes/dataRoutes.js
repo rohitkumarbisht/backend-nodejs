@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const {getAssessmentWiseReport,getOverallProgress} = require('../controller/dataController');
-const {jwt_secret_key} = require('../config/config.js');
+const {jwt_secret_key,jwt_audience,jwt_issuer} = require('../config/config.js');
 
 router.get('/analytics-report/assessment-wise', async (req, res) => {
   try {
@@ -23,16 +23,29 @@ router.get('/analytics-report/overall-progress', async (req, res) => {
       res.json(data);
     } catch (error) {
       console.error('Error executing query', error);
-      res.status(500).json({ error: 'Internal Server Error' });
+      res.json(error);
     }
   });
   
 
 function extractUserIdFromToken(authorizationHeader) {
+    const options = {
+      algorithms: ['HS256'],
+      ignoreExpiration: true,
+      issuer: jwt_issuer,
+      audience: jwt_audience
+    };
+    let user_id = ''
     const token = authorizationHeader.split(' ')[1];
     const base64Key = Buffer.from(jwt_secret_key).toString('base64');
-    const decodedToken = jwt.verify( token, base64Key);
-    const user_id = decodedToken.jti;
+    try {
+      const decodedToken = jwt.verify(token, base64Key,options);
+      user_id = decodedToken.jti;
+  
+  } catch (err) {
+      console.error('Token verification failed:', err);
+      return res.status(401).json({ error: 'Unauthorized' });
+  }
     return user_id;
   }
   
