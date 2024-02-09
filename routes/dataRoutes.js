@@ -44,14 +44,18 @@ function extractUserIdFromToken(authorizationHeader) {
       audience: jwt_audience
     };
     let user_id = ''
-    const token = authorizationHeader.split(' ')[1];
+    let token =''
+    try{
+    token = authorizationHeader.split(' ')[1];
+    }catch(err){
+      throw new CustomUnauthorizedError(`Unauthorized: token not found `);
+    }
     const base64Key = Buffer.from(jwt_secret_key).toString('base64');
     try {
       const decodedToken = jwt.verify(token, base64Key,options);
       user_id = decodedToken.jti;
   
   } catch (err) {
-      console.log(err)
       throw new CustomUnauthorizedError(`Unauthorized: ${err} `);
   }
     return user_id;
