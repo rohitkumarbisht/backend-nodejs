@@ -120,7 +120,7 @@ const assessment_list_query = `
 
             --*Assessment name*
             sv.assessment_txt 
-                as assesment_name,
+                as assessment_name,
             
             --*Percentage*
             ROUND((sv.given_score::numeric / sv.max_score::numeric)*100, 2) 
