@@ -1,17 +1,30 @@
 const pool = require('../config/db');
 const {overall_data_query, assessment_list_query, assessment_status_query} = require('../query/overall_progress.js');
-const { calculateAverageReport } = require('./dataCalculation');
-const { individual_report_query } = require('../query/individual_assessment_report.js');
-const { CustomNotFoundError, CustomInternalServerError } = require('../routes/error-handling/custom_error.js');
+const { calculateAverageReport, calculateIndividualReport } = require('./dataCalculation');
+const {head_reports_individual_query, table_view_summary_query, leaderboard_query } = require('../query/individual_assessment_report.js');
+const { CustomNotFoundError } = require('../routes/error-handling/custom_error.js');
 
 async function getAssessmentWiseReport(assessment_id,user_id) {
   try {
-    const result = await pool.query(individual_report_query,[assessment_id,user_id]);
-    return result.rows;
-  } catch (error) {
-    console.error('Error executing query', error);
-    throw error;
-  }
+    const head_reports_individual = await pool.query(head_reports_individual_query,[assessment_id,user_id]); 
+
+    const table_view_summary = await pool.query(table_view_summary_query,[assessment_id,user_id]);
+    
+    const leaderboard_data = await pool.query(leaderboard_query,[assessment_id]);
+    
+    const final={
+      head_data: head_reports_individual.rows[0],
+      table_graph_data : table_view_summary.rows,
+      leaderboard : leaderboard_data.rows
+    }
+    const result = calculateIndividualReport(final)
+    if (head_reports_individual.rows[0].score == null || table_view_summary.rows.length === 0 || leaderboard_data.rows.length == 0) {
+      throw new CustomNotFoundError(`No data found for user ID: ${user_id}`);
+      }
+        return result;
+    } catch (error) {
+      throw new CustomNotFoundError(` ${error.message}`);
+    }
 }
 
 async function getOverallProgress(user_id) {
