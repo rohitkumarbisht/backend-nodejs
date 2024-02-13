@@ -11,10 +11,16 @@ router.get('/analytics-report/assessment-wise', async (req, res) => {
     const user_id = extractUserIdFromToken(req.headers.authorization);
     const data = await getAssessmentWiseReport(assessment_id,user_id);
     res.json(data);
-  } catch (error) {
-    console.error('Error executing query', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-    throw new Error(`Unauthorized: ${err} `);
+  } catch (err) {
+    if (err instanceof CustomUnauthorizedError) {
+      res.status(err.statusCode).json({ error: err.message });
+  } else if (err instanceof CustomNotFoundError) {
+      res.status(err.statusCode).json({ error: err.message });
+  }else if (err instanceof CustomInternalServerError) {
+    res.status(err.statusCode).json({ error: err.message });
+  } else{
+    res.status(200).json({error : err})
+  }
   }
 });
 

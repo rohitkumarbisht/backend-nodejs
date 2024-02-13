@@ -18,6 +18,20 @@ function calculateAverageReport(result) {
     return report_data;
 }
 
+function calculateIndividualReport(result){
+    const individual_data = {
+        "score": result.head_data.score,
+        "rank": result.head_data.rank,
+        "percentage": result.head_data.percentage,
+        "percentile": result.head_data.percentile,
+        "test_time": result.head_data.test_time,
+        "table_graph_data": result.table_graph_data,
+        "leaderboard": result.leaderboard
+    }
+    return individual_data;
+}
+
 module.exports = {
     calculateAverageReport,
+    calculateIndividualReport
 };
