@@ -1,12 +1,12 @@
-const {schemaName, statement_table, statement_view_table, average_table} = require('../config/config.js');
+const { schemaName, statement_table, statement_view_table, average_table } = require('../config/config.js');
 
 const overall_data_query = `
     SELECT
 
-        --*Count of Assessments*
+    --*Count of Assessments*
         COUNT(DISTINCT st.assessment_id) AS assessment_COUNT,
 
-        --*Count of number of questions*
+    --*Count of number of questions*
         (select COUNT(*) 
             from 
             ${schemaName}.${statement_view_table} 
@@ -14,7 +14,7 @@ const overall_data_query = `
             event_type = 'Assessment Item' and user_id = $1) 
             AS total_questions,
 
-        --*Total Percentage*
+    --*Total Percentage*
         (select 
             ROUND((SUM(given_score)::numeric / SUM(max_score)::numeric)*100, 2) 
             AS percentage 
@@ -23,7 +23,7 @@ const overall_data_query = `
             where 
             event_type = 'Assessment' and user_id = $1),
         
-        --*Average Time*
+    --*Average Time*
         (select 
             to_char(EXTRACT(HOUR FROM avg(test_time)), 'fm00') || ':' ||
             to_char(EXTRACT(MINUTE FROM avg(test_time)), 'fm00') || ':' ||
@@ -45,7 +45,7 @@ const overall_data_query = `
             where 
                 event_type = 'Assessment' and user_id = $1),
 
-            --*Number of correct questions*
+    --*Number of correct questions*
             (select 
             count(*) 
             AS correct_number_of_questions 
@@ -54,7 +54,7 @@ const overall_data_query = `
             where 
                 event_type = 'Assessment Item' and result IN (TRUE) and user_id = $1),
             
-            --*Number of incorrect questions*
+    --*Number of incorrect questions*
             (select 
             count(*) 
             AS incorrect_number_of_questions 
@@ -63,7 +63,7 @@ const overall_data_query = `
             where 
                 event_type = 'Assessment Item' and result IN (FALSE) and user_id = $1),
 
-            --*Time of correct questions*
+    --*Time of correct questions*
             (select 
             to_char(EXTRACT(HOUR FROM sum(test_time)), 'fm00') || ':' ||
             to_char(EXTRACT(MINUTE FROM sum(test_time)), 'fm00') || ':' ||
@@ -74,7 +74,7 @@ const overall_data_query = `
             where 
                 event_type = 'Assessment Item' and result IN (TRUE) and user_id = $1),
 
-            --*Time of incorrect questions*
+    --*Time of incorrect questions*
             (select 
             to_char(EXTRACT(HOUR FROM sum(test_time)), 'fm00') || ':' ||
             to_char(EXTRACT(MINUTE FROM sum(test_time)), 'fm00') || ':' ||
@@ -85,7 +85,7 @@ const overall_data_query = `
             where 
                 event_type = 'Assessment Item' and result IN (FALSE) and user_id = $1),
 
-            --*Percentage of correct questions*
+    --*Percentage of correct questions*
             (select 
             ROUND((SUM(given_score)::numeric / SUM(max_score)::numeric)*100, 2) 
             AS correct_percentage 
@@ -94,7 +94,7 @@ const overall_data_query = `
             where 
                 event_type = 'Assessment' and user_id = $1),
 
-            --*Percentage of incorrect questions*
+    --*Percentage of incorrect questions*
             (select 
             100 - ROUND((SUM(given_score)::numeric / SUM(max_score)::numeric)*100, 2) 
             AS incorrect_percentage 
@@ -107,34 +107,30 @@ const overall_data_query = `
         WHERE
             st.user_id = $1;`
 
-
-
-
-
 const assessment_list_query = `
-    select
+    SELECT
 
-            --*Assessment id*
-            sv.assessment_id 
-                as assessment_id ,
+    --*Assessment id*
+        sv.assessment_id 
+            as assessment_id ,
 
-            --*Assessment name*
-            sv.assessment_txt 
-                as assessment_name,
+    --*Assessment name*
+        sv.assessment_txt 
+            as assessment_name,
             
-            --*Percentage*
-            ROUND((sv.given_score::numeric / sv.max_score::numeric)*100, 2) 
-                AS percentage,
+    --*Percentage*
+        ROUND((sv.given_score::numeric / sv.max_score::numeric)*100, 2) 
+            AS percentage,
 
-            --*Time*
-            sv.test_minutes 
-                as time_test,
+    --*Time*
+        sv.test_minutes 
+            as time_test,
 
-            --*Average Percentage*
+    --*Average Percentage*
             ROUND((sva.average_score::numeric / sva.max_score::numeric)*100, 2) 
                 AS average_percentage,
 
-            --*Average Time*
+    --*Average Time*
             ROUND(sva.average_time,2) 
                 as average_time
         FROM 
@@ -148,10 +144,20 @@ const assessment_list_query = `
 
 const assessment_status_query = `
     select 
+
+    --*Assessment Id*
         assessment_id ,
+
+    --*Assessment Name*
         assessment_txt ,
-        max(attempt_id) as attempt_count ,
-        (case when max(last_update_dt) is null then 'In-Progress' else 'Completed' end) as status
+
+    --*Latest Attempt Number*
+        max(attempt_id) 
+            as attempt_count ,
+
+    --*Assessment Status (In-Progress or Completed)*
+        (case when max(last_update_dt) is null then 'In-Progress' else 'Completed' end) 
+            as status
         from 
             ${schemaName}.${statement_table} 
         where
