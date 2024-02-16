@@ -1,55 +1,55 @@
 const pool = require('../config/db');
-const {overall_data_query, assessment_list_query, assessment_status_query} = require('../query/overall_progress.js');
+const { overall_data_query, assessment_list_query, assessment_status_query } = require('../query/overall_progress.js');
 const { calculateAverageReport, calculateIndividualReport } = require('./dataCalculation');
-const {head_reports_individual_query, table_view_summary_query, leaderboard_query } = require('../query/individual_assessment_report.js');
+const { head_reports_individual_query, table_view_summary_query, leaderboard_query } = require('../query/individual_assessment_report.js');
 const { CustomNotFoundError } = require('../routes/error-handling/custom_error.js');
 
-async function getAssessmentWiseReport(assessment_id,user_id) {
+async function getAssessmentWiseReport(assessment_id, user_id) {
   try {
-    const head_reports_individual = await pool.query(head_reports_individual_query,[assessment_id,user_id]); 
+    const head_reports_individual = await pool.query(head_reports_individual_query, [assessment_id, user_id]);
 
-    const table_view_summary = await pool.query(table_view_summary_query,[assessment_id,user_id]);
-    
-    const leaderboard_data = await pool.query(leaderboard_query,[assessment_id]);
-    
-    const final={
+    const table_view_summary = await pool.query(table_view_summary_query, [assessment_id, user_id]);
+
+    const leaderboard_data = await pool.query(leaderboard_query, [assessment_id]);
+
+    const final = {
       head_data: head_reports_individual.rows[0],
-      table_graph_data : table_view_summary.rows,
-      leaderboard : leaderboard_data.rows
+      table_graph_data: table_view_summary.rows,
+      leaderboard: leaderboard_data.rows
     }
     const result = calculateIndividualReport(final)
     if (head_reports_individual.rows[0].score == null || table_view_summary.rows.length === 0 || leaderboard_data.rows.length == 0) {
       throw new CustomNotFoundError(`No data found for user ID: ${user_id}`);
-      }
-        return result;
-    } catch (error) {
-      throw new CustomNotFoundError(` ${error.message}`);
     }
+    return result;
+  } catch (error) {
+    throw new CustomNotFoundError(` ${error.message}`);
+  }
 }
 
 async function getOverallProgress(user_id) {
-    try {
-      const overall_data = await pool.query( overall_data_query, [user_id]);
-        
-      const assessment_list = await pool.query(assessment_list_query, [user_id]);
+  try {
+    const overall_data = await pool.query(overall_data_query, [user_id]);
 
-      const assessment_status = await pool.query(assessment_status_query,[user_id])
+    const assessment_list = await pool.query(assessment_list_query, [user_id]);
 
-      const final = {
-        data : overall_data.rows[0],
-        assessment_list: assessment_list.rows,
-        assessment_status : assessment_status.rows
-      }
-      const result = calculateAverageReport(final)
-      if (overall_data.rows[0].percentage == null || assessment_list.rows.length === 0 || assessment_status.rows.length == 0) {
-      throw new CustomNotFoundError(`No data found for user ID: ${user_id}`);
-      }
-        return result;
-    } catch (error) {
-      throw new CustomNotFoundError(` ${error.message}`);
+    const assessment_status = await pool.query(assessment_status_query, [user_id])
+
+    const final = {
+      data: overall_data.rows[0],
+      assessment_list: assessment_list.rows,
+      assessment_status: assessment_status.rows
     }
+    const result = calculateAverageReport(final)
+    if (overall_data.rows[0].percentage == null || assessment_list.rows.length === 0 || assessment_status.rows.length == 0) {
+      throw new CustomNotFoundError(`No data found for user ID: ${user_id}`);
+    }
+    return result;
+  } catch (error) {
+    throw new CustomNotFoundError(` ${error.message}`);
   }
+}
 module.exports = {
-    getAssessmentWiseReport,
-    getOverallProgress,
+  getAssessmentWiseReport,
+  getOverallProgress,
 };

@@ -14,17 +14,17 @@ const jwt_audience = process.env.JWT_AUDIENCE;
 const statement_view_table = process.env.DB_STATEMENT_VIEW;
 const statement_table = process.env.DB_STATEMENT_TABLE;
 module.exports = {
-    user,
-    host,
-    database,
-    password,
-    port,
-    schemaName,
-    rank_table,
-    average_table,
-    jwt_secret_key,
-    jwt_issuer,
-    jwt_audience,
-    statement_view_table,
-    statement_table,
-  };
+  user,
+  host,
+  database,
+  password,
+  port,
+  schemaName,
+  rank_table,
+  average_table,
+  jwt_secret_key,
+  jwt_issuer,
+  jwt_audience,
+  statement_view_table,
+  statement_table,
+};
