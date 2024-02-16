@@ -2,7 +2,7 @@ const swagger_doc = {
   "openapi": "3.0.0",
   "info": {
     "title": "Learning Analytics",
-    "description": "Api to to feych data",
+    "description": "Api to to fetch data",
     "version": "1.0"
   },
   "tags": [
