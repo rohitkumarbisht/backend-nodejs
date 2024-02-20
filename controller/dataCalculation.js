@@ -31,7 +31,62 @@ function calculateIndividualReport(result) {
     return individual_data;
 }
 
+function calculateTeacherReport(result) {
+
+    const transformedData = {
+        "assessment_rank": []
+      };
+      
+      const rank_data = { "assessment_rank": result.assessment_rank }
+      
+      rank_data.assessment_rank.forEach(entry => {
+        const assessmentId = entry.assessment_id
+        const assessmentName = entry.assessment_name
+        console.log(assessmentName, assessmentId)
+      
+        let existingEntry = transformedData.assessment_rank.find(e => e.assessment_id === assessmentId)
+      
+        if (!existingEntry) {
+          existingEntry = {
+            assessment_id: assessmentId,
+            assessment_name: assessmentName,
+            leaderboard: []
+          };
+          transformedData.assessment_rank.push(existingEntry)
+        }
+      
+        existingEntry.leaderboard.push({
+          assessment_name: entry.assessment_name,
+          rank: entry.rank,
+          name: entry.name,
+          percentage: entry.percentage,
+          skill: entry.skill,
+          total_test_time: entry.test_time
+        })
+      })
+    
+
+    const teacher_view = {
+        "total_students": result.data.total_students,
+        "assessment_attempted": result.data.assessment_attempted,
+        "overall_percentage": result.data.overall_percentage,
+        "completed_assessments": result.data.completed_assessments,
+        "in_progress_assessments": result.data.in_progress_assessments,
+        "correct_percentage": result.data.correct_percentage,
+        "incorrect_percentage": result.data.incorrect_percentage,
+        "correct_questions": result.data.correct_questions,
+        "incorrect_questions": result.data.incorrect_questions,
+        "time_spent_on_correct": result.data.time_spent_on_correct,
+        "time_spent_on_incorrect": result.data.time_spent_on_correct,
+        "assessment_percentage": result.assessment_list,
+        "assessment_rank": transformedData.assessment_rank
+
+    }
+    return teacher_view;
+}
+
 module.exports = {
     calculateAverageReport,
-    calculateIndividualReport
+    calculateIndividualReport,
+    calculateTeacherReport
 };
