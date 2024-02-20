@@ -42,7 +42,6 @@ function calculateTeacherReport(result) {
       rank_data.assessment_rank.forEach(entry => {
         const assessmentId = entry.assessment_id
         const assessmentName = entry.assessment_name
-        console.log(assessmentName, assessmentId)
       
         let existingEntry = transformedData.assessment_rank.find(e => e.assessment_id === assessmentId)
       
