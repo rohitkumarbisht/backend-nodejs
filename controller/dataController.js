@@ -43,7 +43,7 @@ async function getOverallProgress(user_id) {
       assessment_list: assessment_list.rows,
       assessment_status: assessment_status.rows
     }
-    if (overall_data.rows[0].percentage == null || assessment_list.rows.length === 0 || assessment_status.rows.length == 0) {
+    if (assessment_list.rows.length === 0 || assessment_status.rows.length == 0) {
       throw new CustomNotFoundError(`No data found for user ID: ${user_id}`);
     }else{
       const result = calculateAverageReport(final)
