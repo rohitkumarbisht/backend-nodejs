@@ -18,11 +18,13 @@ async function getAssessmentWiseReport(assessment_id, user_id) {
       table_graph_data: table_view_summary.rows,
       leaderboard: leaderboard_data.rows
     }
-    const result = calculateIndividualReport(final)
-    if (head_reports_individual.rows[0].score == null || table_view_summary.rows.length === 0 || leaderboard_data.rows.length == 0) {
-      throw new CustomNotFoundError(`No data found for user ID: ${user_id}`);
+    if ( table_view_summary.rows.length === 0 || leaderboard_data.rows.length == 0) {
+      throw new CustomNotFoundError(`No data found for assessment ID: ${assessment_id}`);
+    }else{
+      const result = calculateIndividualReport(final)
+      return result;
     }
-    return result;
+   
   } catch (error) {
     throw new CustomNotFoundError(` ${error.message}`);
   }
@@ -41,11 +43,12 @@ async function getOverallProgress(user_id) {
       assessment_list: assessment_list.rows,
       assessment_status: assessment_status.rows
     }
-    const result = calculateAverageReport(final)
-    if (overall_data.rows[0].percentage == null || assessment_list.rows.length === 0 || assessment_status.rows.length == 0) {
+    if (assessment_list.rows.length === 0 || assessment_status.rows.length == 0) {
       throw new CustomNotFoundError(`No data found for user ID: ${user_id}`);
+    }else{
+      const result = calculateAverageReport(final)
+      return result;
     }
-    return result;
   } catch (error) {
     throw new CustomNotFoundError(` ${error.message}`);
   }
@@ -64,8 +67,12 @@ async function getTeacherView() {
       assessment_list: assessment_list.rows,
       assessment_rank: assessment_rank.rows
     }
-    const result = calculateTeacherReport(final)
-    return result;
+    if (assessment_list.rows.length === 0 || assessment_rank.rows.length == 0) {
+      throw new CustomNotFoundError(`No data found`);
+    }else{
+      const result = calculateTeacherReport(final)
+      return result;
+    }
   } catch (error) {
     throw new CustomNotFoundError(` ${error.message}`);
   }

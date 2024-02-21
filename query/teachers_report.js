@@ -1,4 +1,4 @@
-const { schemaName, rank_table, statement_table } = require('../config/config.js');
+const { schemaName, rank_table, statement_table, statement_view_table } = require('../config/config.js');
 
 const head_reports_teacher_query = `
     SELECT
@@ -7,7 +7,7 @@ const head_reports_teacher_query = `
         (select
             count(distinct(st.user_id))
         from 
-            ${schemaName}.${statement_table} as st
+            ${schemaName}.${statement_view_table} as st
         where 
             st.event_type = 'Assessment' and st.last_update_dt is not null) as total_students,
 
@@ -21,9 +21,9 @@ const head_reports_teacher_query = `
 
 
         (select
-            round((sum(st.given_score)::numeric/sum(st.max_score)::numeric)*100,2)
+            round(avg(st.given_score::numeric/st.max_score::numeric *100),2)
         from 
-            ${schemaName}.${statement_table} as st
+            ${schemaName}.${statement_view_table} as st
         where 
             st.event_type = 'Assessment' and st.last_update_dt is not null) as overall_percentage,
 
@@ -33,7 +33,7 @@ const head_reports_teacher_query = `
             to_char(extract (MINUTE from avg(st.test_time)), 'fm00')||':'||
             to_char(extract (SECOND from avg(st.test_time)), 'fm00') 
         from 
-            ${schemaName}.${statement_table} as st
+            ${schemaName}.${statement_view_table} as st
         where 
             st.event_type = 'Assessment' and st.last_update_dt is not null) as average_test_time,
 
@@ -71,7 +71,7 @@ const head_reports_teacher_query = `
             to_char(extract (MINUTE from sum(st.test_time)), 'fm00')||':'||
             to_char(extract (SECOND from sum(st.test_time)), 'fm00')
         from
-            ${schemaName}.${statement_table} as st
+            ${schemaName}.${statement_view_table} as st
         where
             st.given_score=1 and st.event_type='Assessment Item' and st.last_update_dt is not null) as time_spent_on_correct,
 
@@ -81,12 +81,12 @@ const head_reports_teacher_query = `
             to_char(extract (MINUTE from sum(st.test_time)), 'fm00')||':'||
             to_char(extract (SECOND from sum(st.test_time)), 'fm00')
         from
-            ${schemaName}.${statement_table} as st
+            ${schemaName}.${statement_view_table} as st
         where
             st.given_score=0 and st.event_type='Assessment Item' and st.last_update_dt is not null) as time_spent_on_incorrect
         
     from 
-        ${schemaName}.${statement_table} as s 
+        ${schemaName}.${statement_view_table} as s 
     where 
         s.event_type = 'Assessment Item' and s.last_update_dt is not null;`
 
@@ -103,7 +103,7 @@ const assessment_percentage_teacher_query = `
         (select
             min(round(st.given_score::numeric/st.max_score::numeric*100,2))
         from
-            ${schemaName}.${statement_table} as st
+            ${schemaName}.${statement_view_table} as st
         where 
             st.assessment_id = s.assessment_id and st.event_type='Assessment' and st.last_update_dt is not null) as min_percentage,
 
@@ -111,7 +111,7 @@ const assessment_percentage_teacher_query = `
         (select
             round(avg(st.given_score::numeric/st.max_score::numeric*100),2)
         from
-            ${schemaName}.${statement_table} as st
+            ${schemaName}.${statement_view_table} as st
         where 
             st.assessment_id = s.assessment_id and st.event_type='Assessment' and st.last_update_dt is not null) as average_percentage,
 
@@ -119,11 +119,11 @@ const assessment_percentage_teacher_query = `
         (select
             max(round(st.given_score::numeric/st.max_score::numeric*100,2))
         from
-            ${schemaName}.${statement_table} as st
+            ${schemaName}.${statement_view_table} as st
         where 
             st.assessment_id = s.assessment_id and st.event_type='Assessment' and st.last_update_dt is not null) as max_percentage
         
-    from ${schemaName}.${statement_table} as s where s.event_type='Assessment' and s.last_update_dt is not null;`
+    from ${schemaName}.${statement_view_table} as s where s.event_type='Assessment' and s.last_update_dt is not null;`
 
     const leaderboard_teacher_query =`
     SELECT

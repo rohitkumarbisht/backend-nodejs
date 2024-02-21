@@ -78,7 +78,7 @@ function calculateTeacherReport(result) {
         "total_correct_questions": result.data.correct_questions,
         "total_incorrect_questions": result.data.incorrect_questions,
         "total_time_spent_on_correct": result.data.time_spent_on_correct,
-        "total_time_spent_on_incorrect": result.data.time_spent_on_correct,
+        "total_time_spent_on_incorrect": result.data.time_spent_on_incorrect,
         "assessment_percentage": result.assessment_list,
         "assessment_rank": transformedData.assessment_rank
 

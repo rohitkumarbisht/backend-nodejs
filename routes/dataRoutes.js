@@ -44,6 +44,7 @@ router.get('/analytics-report/overall-progress', async (req, res) => {
 
 router.get('/analytics-report/teacher-view', async (req, res) => {
   try {
+    extractRoleFromToken(req.headers.authorization)
     const data = await getTeacherView();
     res.json(data);
   } catch (err) {
@@ -58,6 +59,36 @@ router.get('/analytics-report/teacher-view', async (req, res) => {
     }
   }
 });
+
+function extractRoleFromToken(authorizationHeader){
+  const options = {
+    algorithms: ['HS256'],
+    ignoreExpiration: true,
+    issuer: jwt_issuer,
+    audience: jwt_audience
+  };
+
+  let role = ''
+  let token = ''
+
+  try {
+    token = authorizationHeader.split(' ')[1];
+  } catch (err) {
+    throw new CustomUnauthorizedError(`Unauthorized: token not found `);
+  }
+  const base64Key = Buffer.from(jwt_secret_key).toString('base64');
+  try {
+    const decodedToken = jwt.verify(token, base64Key, options);
+    if(decodedToken.roles=='ROLE_ADMIN' || decodedToken.roles=='ROLE_TEACHER'){
+      role = decodedToken.roles;}
+    else{
+      throw new err;
+    }
+  } catch (err) {
+    throw new CustomUnauthorizedError(`Unauthorized: User not having permision `);
+  }
+  return role;
+}
 
 function extractUserIdFromToken(authorizationHeader) {
   const options = {
