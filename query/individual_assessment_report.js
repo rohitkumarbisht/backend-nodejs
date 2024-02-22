@@ -118,29 +118,72 @@ const table_view_summary_query = `
     group by 
         s.attempt_id, s.submit_time, s.last_update_dt, s.final_skill;`
 
-const leaderboard_query = `
-    select
+ const leaderboard_query =`
+    SELECT 
+        *
+    from(
+
+    --*All the students in range of uid 1 to 5*
+        select
 
     --*Rank of student*
-        "rank" as rank,
-    
+            "rank" as rank,
+
+    --*Name of User Id*
+            user_id as user_id,
+
     --*Name of Student*
-        user_name as name,
+            user_name as name,
 
     --*Percentage of Student*
-        Round(percentage::numeric*100,2) as percentage,
+            round(percentage::numeric*100,2) as percentage,
 
     --*Final Skill of student*
-        final_skill as skill,
-        (to_char(EXTRACT(HOUR FROM avg((test_time))), 'fm00') || ':' ||
-        to_char(EXTRACT(MINUTE FROM avg((test_time))), 'fm00') || ':' ||
-        to_char(EXTRACT(SECOND FROM avg((test_time))), 'fm00')) as total_test_time
-    from 
+            final_skill as skill,
+
+    --*Time used by student to complete assessment*
+            (to_char(EXTRACT(HOUR FROM avg((test_time))), 'fm00') || ':' ||
+            to_char(EXTRACT(MINUTE FROM avg((test_time))), 'fm00') || ':' ||
+            to_char(EXTRACT(SECOND FROM avg((test_time))), 'fm00')) as total_test_time
+        from
             ${schemaName}.${rank_table} svr
-    where 
-        svr.assessment_id = $1 and uid IN (1, 2, 3, 4, 5)
-    group by 
-        svr.rank,svr.user_name, svr.percentage, svr.final_skill;`
+        where
+            svr.assessment_id=$1 and uid in (1,2,3,4,5)
+        group by
+            svr.uid, svr.rank, svr.user_id, svr.user_name, svr.percentage, svr.final_skill
+        
+        UNION
+
+
+    --*Student with the given user_id*
+        select
+
+    --*Rank of student*
+            "rank" as rank,
+
+    --*User Id of Student*
+            user_id as user_id,
+
+    --*Name of Student*
+            user_name as name,
+
+    --*Percentage of Student*
+            round(percentage::numeric*100,2) as percentage,
+
+    --*Final Skill of student*
+            final_skill as skill,
+
+    --*Time used by student to complete assessment*
+            (to_char(EXTRACT(HOUR FROM avg((test_time))), 'fm00') || ':' ||
+            to_char(EXTRACT(MINUTE FROM avg((test_time))), 'fm00') || ':' ||
+            to_char(EXTRACT(SECOND FROM avg((test_time))), 'fm00')) as total_test_time
+        from
+            ${schemaName}.${rank_table} sr
+        where
+            sr.assessment_id=$1 and sr.user_id in ($2)
+        group by
+            sr.uid, sr.rank, sr.user_id, sr.user_name, sr.percentage, sr.final_skill
+    )as combined_results;`
 
 module.exports = {
     head_reports_individual_query,

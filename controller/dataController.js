@@ -11,7 +11,7 @@ async function getAssessmentWiseReport(assessment_id, user_id) {
 
     const table_view_summary = await pool.query(table_view_summary_query, [assessment_id, user_id]);
 
-    const leaderboard_data = await pool.query(leaderboard_query, [assessment_id]);
+    const leaderboard_data = await pool.query(leaderboard_query, [assessment_id,user_id]);
 
     const final = {
       head_data: head_reports_individual.rows[0],
