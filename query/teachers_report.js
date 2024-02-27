@@ -17,15 +17,18 @@ const head_reports_teacher_query = `
         from 
             ${schemaName}.${statement_table} as st
         where 
-            st.event_type = 'Assessment' and st.last_update_dt is not null) as assessment_attempted,
+            st.event_type = 'Assessment') as assessment_attempted,
 
     --*Average percentage*
-        (select
-            round(avg(st.given_score::numeric/st.max_score::numeric *100),2)
-        from 
-            ${schemaName}.${statement_view_table} as st
-        where 
-            st.event_type = 'Assessment' and st.last_update_dt is not null) as overall_percentage,
+        --* (select
+           --* round(avg(st.given_score::numeric/st.max_score::numeric *100),2)
+        --* from 
+            --* ${schemaName}.${statement_view_table} as st
+        --* where 
+            --* st.event_type = 'Assessment' and st.last_update_dt is not null) as overall_percentage,
+    
+    --*Percentage of correct questions*
+        round(sum(given_score)::numeric/sum(max_score)::numeric*100,2) as overall_percentage,
 
     --*Average test time*
         (select 

@@ -7,6 +7,10 @@ const swagger_doc = {
   },
   "tags": [
     {
+      "name": "Teachers View",
+      "description": "Fetch Overall progress data for all the students from database"
+    },
+    {
       "name": "Overall Progress",
       "description": "Fetch Overall progress data from database"
     },
@@ -36,6 +40,136 @@ const swagger_doc = {
     }
   },
   "paths": {
+    "/analytics-report/teacher-view": {
+      "get": {
+        "tags": [
+          "Teachers View"
+        ],
+        "summary": "Get data from the database",
+        "description": "Retrieve all records for all the students from the specified table",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "example": {
+                  "total_students": "21",
+                  "assessment_attempted": "124",
+                  "overall_percentage": "62.91",
+                  "completed_assessments": "124",
+                  "in_progress_assessments": "27",
+                  "total_correct_percentage": "67.64",
+                  "total_incorrect_percentage": "32.36",
+                  "total_correct_questions": "1762",
+                  "total_incorrect_questions": "843",
+                  "total_time_spent_on_correct": "33:33:37",
+                  "total_time_spent_on_incorrect": "33:33:37",
+                  "assessment_percentage": [
+                    {
+                        "assessment_id": "1",
+                        "assessment_name": "GK Grade 8 (Precision)",
+                        "min_percentage": "0.00",
+                        "average_percentage": "58.87",
+                        "max_percentage": "88.00"
+                    },
+                    {
+                        "assessment_id": "16",
+                        "assessment_name": "Adaptive Assessment Demo",
+                        "min_percentage": "29.41",
+                        "average_percentage": "67.04",
+                        "max_percentage": "82.05"
+                    },
+                    {
+                        "assessment_id": "163",
+                        "assessment_name": "GK (G-8) 3PL- targetSkillWithPrecision",
+                        "min_percentage": "84.62",
+                        "average_percentage": "89.07",
+                        "max_percentage": "91.67"
+                    }
+                  ],
+                  "assessment_rank": [
+                    {
+                        "assessment_id": "1",
+                        "assessment_name": "GK Grade 8 (Precision)",
+                        "leaderboard": [
+                            {
+                                "assessment_name": "GK Grade 8 (Precision)",
+                                "rank": "1",
+                                "name": "Sara Clark",
+                                "percentage": "87.50",
+                                "skill": "3.2447",
+                                "total_test_time": "00:02:55"
+                            },
+                            {
+                                "assessment_name": "GK Grade 8 (Precision)",
+                                "rank": "2",
+                                "name": "Cindy Hayden",
+                                "percentage": "82.35",
+                                "skill": "2.3116",
+                                "total_test_time": "00:05:41"
+                            }
+                          ]
+                    },
+                    {
+                      "assessment_id": "16",
+                      "assessment_name": "Adaptive Assessment Demo",
+                      "leaderboard": [
+                          {
+                            "assessment_name": "Adaptive Assessment Demo",
+                            "rank": "1",
+                            "name": "Jason Scott",
+                            "percentage": "82.05",
+                            "skill": "-0.9277",
+                            "total_test_time": "00:27:23"
+                          },
+                          {
+                            "assessment_name": "Adaptive Assessment Demo",
+                            "rank": "2",
+                            "name": "Sheila Manning",
+                            "percentage": "77.78",
+                            "skill": "-1.6173",
+                            "total_test_time": "00:08:15"
+                            }
+                        ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorised Access",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Unauthorized: User not having permission"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "No data found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Internal Server Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/analytics-report/overall-progress": {
       "get": {
         "tags": [
