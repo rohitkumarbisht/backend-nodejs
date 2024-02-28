@@ -3,9 +3,13 @@ const bodyParser = require("body-parser");
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./swagger/swaggerDefinition.js');
 const router = require('./routes/dataRoutes.js')
-const cors = require('cors')
+const cors = require('cors');
+const { server_port, swagger_end_point } = require("./config/config.js");
+const compression = require("compression");
 
 const app = express();
+
+app.use(compression())
 
 app.use(bodyParser.json());
 
@@ -13,8 +17,6 @@ app.use(cors());
 
 app.use('/', router);
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use(`${swagger_end_point}`, swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-const PORT = 5000;
-
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(server_port, () => console.log(`Server running on port ${server_port}`));
