@@ -9,8 +9,8 @@ hooks:
   ApplicationStop:
     - location: Dependency_Scripts/stopApplication.sh
       timeout: 600
-      runas: ubuntu
+      runas: root
   ApplicationStart:
     - location: Dependency_Scripts/startApplication.sh
       timeout: 600
-      runas: ubuntu
+      runas: root
