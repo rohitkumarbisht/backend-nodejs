@@ -1,3 +1,5 @@
+const { LA_API } = require("../config/config");
+
 const swagger_doc = {
   "openapi": "3.0.0",
   "info": {
@@ -21,8 +23,12 @@ const swagger_doc = {
   ],
   "servers": [
     {
-      "url": "http://localhost:5000/",
+      "url": `http://localhost:5000${LA_API}`,
       "description": "Local Development Environment"
+    },
+    {
+      "url": `https://dev-accelerators.magicedtech.com${LA_API}`,
+      "description": "Production Development Environment"
     }
   ],
   "security": [
