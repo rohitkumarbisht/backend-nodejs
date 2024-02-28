@@ -16,7 +16,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 app.get(`${LA_API}`, (req, res) => {
-    res.send('API is running...');
+    res.status(200).json({ response: 'API is running...' });
   });
 
 app.use(`${LA_API}`, router);
