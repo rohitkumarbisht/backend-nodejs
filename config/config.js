@@ -21,6 +21,7 @@ const OVERALL_PROGRESS = process.env.OVERALL_PROGRESS;
 const TEACHER_VIEW = process.env.TEACHER_VIEW;
 const teacher_role = process.env.ROLE_TEACHER;
 const admin_role = process.env.ROLE_ADMIN;
+const LA_API = process.env.LA_API;
 module.exports = {
   user,
   host,
@@ -43,4 +44,5 @@ module.exports = {
   TEACHER_VIEW,
   teacher_role,
   admin_role,
+  LA_API,
 };
