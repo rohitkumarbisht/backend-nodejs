@@ -22,6 +22,19 @@ const TEACHER_VIEW = process.env.TEACHER_VIEW;
 const teacher_role = process.env.ROLE_TEACHER;
 const admin_role = process.env.ROLE_ADMIN;
 const LA_API = process.env.LA_API;
+const env = process.env.NODE_ENV;
+const development_url = process.env.DEV_URL
+const production_url = process.env.PROD_URL
+
+const getServerUrl = () => {
+  if(env === 'Production'){
+  return `${production_url}`;
+}else{
+  return `${development_url}${server_port}`;
+}};
+
+const server_url = getServerUrl()
+
 module.exports = {
   user,
   host,
@@ -45,4 +58,6 @@ module.exports = {
   teacher_role,
   admin_role,
   LA_API,
+  env,
+  server_url
 };
