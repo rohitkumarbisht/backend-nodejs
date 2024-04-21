@@ -9,7 +9,7 @@ Branch: develop
 $ cd la-api
 
 ```
-git checkout develop
+git checkout main
 ```
 
 # Run command: 
