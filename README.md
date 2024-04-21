@@ -2,7 +2,7 @@
 
 Clone the repo:
 ```
-https://gitlab.magicsw.com/learning-analytics/la-api.git
+
 Branch: develop
 ```
 
